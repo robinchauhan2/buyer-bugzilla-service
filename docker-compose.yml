@@ -6,3 +6,16 @@ services:
     ports:
       - "8000:8000"
     restart: always
+  
+  bugzilla-dev-sqlite:
+    build:
+      context: bugzilla-main
+      dockerfile: Dockerfile
+    environment:
+      BUGZILLA_WWW: /var/www/html/bugzilla/
+    container_name: bugzilla-dev-sqlite
+    image: shameerkc/bugzilla-dev-sqlite
+    ports:
+      - "80:80"
+      - "5989:5900"
+
