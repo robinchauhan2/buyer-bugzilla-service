@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: process.env.BugZilla_Base_URL
+    baseURL: "https://bugzilla.thewitslab.com/bugzilla/"
   });
   
 
