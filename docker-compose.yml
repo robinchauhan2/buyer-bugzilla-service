@@ -4,7 +4,7 @@ services:
     container_name: bugzilla-service-dev
     build: .
     ports:
-      - "8000:8000"
+      - "8000:8001"
     restart: always
   
   bugzilla-dev-sqlite:
@@ -16,6 +16,6 @@ services:
     container_name: bugzilla-dev-sqlite
     image: shameerkc/bugzilla-dev-sqlite
     ports:
-      - "80:80"
+      - "90:80"
       - "5989:5900"
 

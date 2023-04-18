@@ -22,6 +22,7 @@ class HttpRequest {
 
     constructor({ url, method = 'get', data, headers }: { url: string, method?: string, data?: any, headers?: any }) {
         this.url = url;
+        console.log("Hello", url, this.url)
         this.method = method;
         this.data = data;
         this.headers = headers;
@@ -44,7 +45,7 @@ class HttpRequest {
 
             if (this.method.toLowerCase() == 'get') {
                 result = await axiosInstance({
-                    baseURL: process.env.BugZilla_Base_URL,
+                    baseURL: process.env.BUGZILLA_BASE_URI,
                     url: this.url,
                     method: this.method,
                     headers: headers,
@@ -52,23 +53,22 @@ class HttpRequest {
                 });
             }
             else {
-
-
-
+                console.log(this.url)
                 // Make server request using axios
                 result = await axiosInstance({
-                    baseURL: process.env.BugZilla_Base_URL,
+                    baseURL: process.env.BUGZILLA_BASE_URI,
                     url: this.url,
                     method: this.method,
-                    headers: headers,
+                    // headers: headers,
                     timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
                     data: JSON.stringify(this.data)
                 });
+                console.log(result)
             }
             return result;
         }
         catch (err: any) {
-
+            console.log(err)
 
             if (err.response) {
                 // The client was given an error response (5xx, 4xx)
@@ -81,7 +81,7 @@ class HttpRequest {
                 console.log('Error message', err, '\n', err.message);
             }
 
-            throw err.response.data.message;
+            throw err?.response?.data?.message;
         }
     };
 }

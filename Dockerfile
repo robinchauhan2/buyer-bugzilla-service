@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY . .
+Run npm install -g npm@9.6.4
 RUN npm install --development
 RUN npm run build
 CMD [ "node", "dist/index.js" ]

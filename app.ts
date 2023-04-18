@@ -1,8 +1,9 @@
 import * as dotenv from "dotenv";
+dotenv.config();
+
 import express, { Application, Request, Response } from "express";
 import routes from "./routes/index"
 
-dotenv.config();
 
 const createServer = (): express.Application => {
 

@@ -24,6 +24,6 @@ $answer{'diffpath'} = '/usr/bin';
 $answer{'index_html'} = 0;
 $answer{'interdiffbin'} = '/usr/bin/interdiff';
 $answer{'memcached_servers'} = "localhost:11211";
-$answer{'urlbase'} = 'http://localhost/bugzilla/';
+$answer{'urlbase'} = 'http://localhost:90/bugzilla/';
 $answer{'use_suexec'} = '';
 $answer{'webservergroup'} = 'bugzilla';

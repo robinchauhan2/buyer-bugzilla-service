@@ -1,29 +1,30 @@
 
 import { Response, Request } from 'express'
 import { logger } from '../shared/logger'
-import CreateBugService from '../services/bugzilla.service'
+import BugzillaBugService from '../services/bugzilla.service'
 
-const create = new CreateBugService()
+const BugService = new BugzillaBugService()
 
-class CreateBugController {
+class BugsController {
 
 
         async createBug(req: Request, res: Response) {
 
-                const data = await create.createBug(req, res)
+                const data = await BugService.createBug(req, res)
                 logger.info("POST Bugzilla Endpoint hit with: " + req.body)
                 return data
         }
 
         async getAllBug(req: Request, res: Response) {
 
-                const data = await create.getBug(req, res)
+                const data = await BugService.getBug(req, res)
+ 
                 logger.info("POST Bugzilla Endpoint hit with: " + req.body)
                 return data
         }
         async updateBug(req: Request, res: Response) {
 
-                const data = await create.updateBug(req, res)
+                const data = await BugService.updateBug(req, res)
                 logger.info("POST Bugzilla Endpoint hit with: " + req.body)
                 return data
         }
@@ -32,4 +33,4 @@ class CreateBugController {
 }
 
 
-export default CreateBugController
+export default BugsController
