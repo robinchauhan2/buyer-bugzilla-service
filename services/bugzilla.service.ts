@@ -9,7 +9,6 @@ import GetHttpRequest from "../utils/HttpRequest";
 class BugzillaBugService {
 
     constructor() {
-        
         this.createBug = this.createBug.bind(this);
         this.updateBug = this.updateBug.bind(this);
     }
@@ -17,13 +16,15 @@ class BugzillaBugService {
 
     async createBug(req: Request, res: Response) {
         const data: ICreateBug = {
-            product: req.body.product,
-            component: req.body.component,
-            version: req.body.version,
-            summary: req.body.summary,
+            productName: req.body.product,
+            component: "Components",
+            version: "1",
+            summary: req.body.bugSummary,
             alias: req.body.alias,
-            op_sys: req.body.op_sys,
-            rep_platform: req.body.rep_platform
+            op_sys: "Windows 10",
+            rep_platform: "Windows",
+            bpp_id: req.body.bpp_id,
+            bpp_name: req.body.bpp_name
         }
 
 
@@ -72,13 +73,15 @@ class BugzillaBugService {
     async updateBug(req: Request, res: Response) {
 
         const data: ICreateBug = {
-            product: req.body.product,
+            productName: req.body.product,
             component: req.body.component,
             version: req.body.version,
             summary: req.body.summary,
             alias: req.body.alias,
             op_sys: req.body.op_sys,
             rep_platform: req.body.rep_platform,
+            bpp_id:req.body.bpp_id,
+            bpp_name:req.body.bpp_name
         }
         try {
 
