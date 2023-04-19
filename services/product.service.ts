@@ -1,8 +1,12 @@
-import { IRegisterPRoduct } from 'interfaces/Bugs'
-import { logger } from 'shared/logger'
-import HttpRequest from 'utils/HttpRequest'
+import { IRegisterPRoduct } from '../interfaces/Bugs'
+import { logger } from '../shared/logger'
+import HttpRequest from '../utils/HttpRequest'
 
 class ProductService {
+  constructor() {
+    this.registerProduct = this.registerProduct.bind(this)
+    this.getProduct = this.getProduct.bind(this)
+  }
   async registerProduct(registerData: IRegisterPRoduct) {
     try {
       const postInstance = new HttpRequest({

@@ -7,7 +7,6 @@ const app = createServer();
 
 try {
   app.listen(port, (): void => {
-    console.log('process.env.API_KEY', process.env.API_KEY)
     logger.info(`Connected successfully on port ${port}`);
   });
 } catch (error) {

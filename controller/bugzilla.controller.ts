@@ -1,4 +1,3 @@
-
 import { Response, Request } from 'express'
 import { logger } from '../shared/logger'
 import BugzillaBugService from '../services/bugzilla.service'
@@ -6,31 +5,25 @@ import BugzillaBugService from '../services/bugzilla.service'
 const BugService = new BugzillaBugService()
 
 class BugsController {
+  async createBug(req: Request, res: Response) {
+    const data = await BugService.createBug(req, res)
+    logger.info('POST Bugzilla Endpoint hit with: ' + req.body)
+    return data
+  }
 
+  async getAllBug(req: Request, res: Response) {
+        
+    const data = await BugService.getBug(req, res)
 
-        async createBug(req: Request, res: Response) {
+    logger.info('POST Bugzilla Endpoint hit with: ' + req.body)
+    return data
+  }
 
-                const data = await BugService.createBug(req, res)
-                logger.info("POST Bugzilla Endpoint hit with: " + req.body)
-                return data
-        }
-
-        async getAllBug(req: Request, res: Response) {
-
-                const data = await BugService.getBug(req, res)
- 
-                logger.info("POST Bugzilla Endpoint hit with: " + req.body)
-                return data
-        }
-        async updateBug(req: Request, res: Response) {
-
-                const data = await BugService.updateBug(req, res)
-                logger.info("POST Bugzilla Endpoint hit with: " + req.body)
-                return data
-        }
-
-    
+  async updateBug(req: Request, res: Response) {
+    const data = await BugService.updateBug(req, res)
+    logger.info('POST Bugzilla Endpoint hit with: ' + req.body)
+    return data
+  }
 }
-
 
 export default BugsController

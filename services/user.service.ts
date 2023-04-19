@@ -1,8 +1,12 @@
-import { ICreateUser } from 'interfaces/Bugs'
-import { logger } from 'shared/logger'
-import HttpRequest from 'utils/HttpRequest'
+import { ICreateUser } from '../interfaces/Bugs'
+import { logger } from '../shared/logger'
+import HttpRequest from '../utils/HttpRequest'
 
 class UserService {
+  constructor() {
+    this.createUser = this.createUser.bind(this)
+    this.getUser = this.getUser.bind(this)
+  }
   async createUser(data: ICreateUser) {
     try {
       const postInstance = new HttpRequest({
