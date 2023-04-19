@@ -15,6 +15,7 @@ class UserService {
         headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
         data: data,
       })
+
       const response = await postInstance.send()
 
       return response

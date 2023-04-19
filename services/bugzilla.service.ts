@@ -4,10 +4,12 @@ import { ICreateBug } from '../interfaces/Bugs'
 import { logger } from '../shared/logger'
 import GetHttpRequest from '../utils/HttpRequest'
 import ProductService from './product.service'
-// import UserService from './user.service'
+import UserService from './user.service'
+import ComponentService from './component.service'
 
 const productService = new ProductService()
-// const userService = new UserService()
+const userService = new UserService()
+const componentService = new ComponentService()
 
 class BugzillaBugService {
   constructor() {
@@ -36,19 +38,34 @@ class BugzillaBugService {
       //   if (error) throw new Error(`Invalid payload:${error}`)
       //   logger.info('Hitting')
 
-      productService
-        .getProduct({
-          productId: `${data.product.toLowerCase().replace(/\s/g, '')}`,
-        })
-        .then((value) => {
-          if (value?.data?.products[0]?.id) {
-            isProductExist = true
-          }
-        })
+      userService.getUser({ userId: data.bpp_id }).then(async (value) => {
+        console.log('🚀 ~ file: bugzilla.service.ts:42 ~ BugzillaBugService ~ userService.getUser ~ value:', value)
 
+        if (!value?.data?.users[0]) {
+          console.log('inside if')
+          const finalReg = await userService.createUser({
+            email: `${data.bpp_name.trim().toLowerCase().replace(/\s/g, '')}@example.com`,
+            full_name: data.bpp_name,
+            login: data.bpp_id,
+          })
+          console.log(
+            '🚀 ~ file: bugzilla.service.ts:50 ~ BugzillaBugService ~ userService.getUser ~ finalReg:',
+            finalReg,
+          )
+        }
+      })
+
+      const serviceRes = await productService.getProduct({
+        productId: `${data.product.toLowerCase().replace(/\s/g, '')}`,
+      })
+
+      if (serviceRes?.data?.products[0]?.id) {
+        isProductExist = true
+      }
 
       if (!isProductExist) {
         console.log('into isProductExist', !isProductExist)
+
         productService
           .registerProduct({
             name: data.product.replace(/\s/g, '').toLowerCase(),
@@ -56,12 +73,33 @@ class BugzillaBugService {
             is_open: true,
             has_unconfirmed: true,
             version: 'Unspecified',
-            component: 'Component',
+            component: data.bpp_id,
           })
-          .then((value: any) => {
-            console.log('registerProduct', value)
+          .then(async (value: any) => {
+            console.log('🚀 ~ file: bugzilla.service.ts:78 ~ BugzillaBugService ~ .then ~ value:', value)
+            componentService
+              .createComponent({
+                default_assignee: data.bpp_id,
+                description: 'Contact details',
+                name: data.bpp_id,
+                product: data.product.replace(/\s/g, '').toLowerCase(),
+              })
+              .then((component) => {
+                console.log('🚀 ~ file: bugzilla.service.ts:86 ~ BugzillaBugService ~ .then ~ component:', component)
+              })
           })
       }
+
+      componentService
+        .createComponent({
+          default_assignee: data.bpp_id,
+          description: 'Contact details',
+          name: data.bpp_id,
+          product: data.product.replace(/\s/g, '').toLowerCase(),
+        })
+        .then((component) => {
+          console.log('🚀 ~ file: bugzilla.service.ts:86 ~ BugzillaBugService ~ .then ~ component:', component)
+        })
 
       const createBug = new GetHttpRequest({
         url: '/rest/bug',
@@ -72,18 +110,20 @@ class BugzillaBugService {
           description: data.summary,
           classification: 'Unclassified',
           summary: data.summary,
-          component: data.component,
+          component: data.bpp_id,
           version: 'unspecified',
           op_sys: data.op_sys,
           rep_platform: data.rep_platform,
+          alias: data.alias,
         },
       })
 
-      const response = await createBug.send()
+      const response: any = await setTimeout(() => {
+        createBug.send()
+      }, 1000)
 
-      return res.status(201).json({ success: true, data: response?.data })
+      return res.status(201).json({ success: true, data: response?.data, alias: data.alias })
     } catch (error: any) {
-      console.log(error)
       logger.error(error)
       return res.status(500).json({ error: true, message: error || 'Something went wrong' })
     }
@@ -107,20 +147,7 @@ class BugzillaBugService {
   }
 
   async updateBug(req: Request, res: Response) {
-    const data: ICreateBug = {
-      product: req.body.product,
-      component: req.body.component,
-      version: req.body.version,
-      summary: req.body.summary,
-      alias: req.body.alias,
-      op_sys: 'ALL',
-      rep_platform: 'ALL',
-      bpp_id: req.body.bpp_id,
-      bpp_name: req.body.bpp_name,
-    }
     try {
-      console.log('datadatadatadatadatadata', data, req.params.id)
-
       const getInstance = new GetHttpRequest({
         url: `/rest/bug/${req.params.id}`,
         method: 'put',
