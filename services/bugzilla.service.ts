@@ -17,6 +17,29 @@ class BugzillaBugService {
     this.updateBug = this.updateBug.bind(this)
   }
 
+  async addAttachments({ bugId, data }: { bugId: string; data: string }) {
+    const attachmentRequest = new GetHttpRequest({
+      url: `/rest/bug/${bugId}/attachment`,
+      method: 'post',
+      headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+      data: {
+        ids: bugId,
+        content_type: 'text/plain',
+        data: data,
+        file_name: `Attachment for bugId-${bugId}`,
+        summary: 'bug attachments',
+        is_patch: true,
+      },
+    })
+
+    const attachmentResponse = await attachmentRequest.send()
+    console.log(
+      '🚀 ~ file: bugzilla.service.ts:41 ~ BugzillaBugService ~ addAttachments ~ attachmentResponse:',
+      attachmentResponse,
+    )
+    return attachmentResponse
+  }
+
   async createBug(req: Request, res: Response) {
     let isProductExist: boolean = false
 
@@ -30,6 +53,7 @@ class BugzillaBugService {
       rep_platform: 'ALL',
       bpp_id: req.body.bpp_id,
       bpp_name: req.body.bpp_name,
+      attachments: req.body.attachments,
     }
 
     try {
@@ -74,7 +98,7 @@ class BugzillaBugService {
           has_unconfirmed: true,
           version: 'Unspecified',
         })
-        
+
         console.log('🚀 ~ file: bugzilla.service.ts:77 ~ BugzillaBugService ~ createBug ~ product:', product)
 
         const component = await componentService.createComponent({
@@ -108,6 +132,11 @@ class BugzillaBugService {
       const response: any = await createBug.send()
       console.log('🚀 ~ file: bugzilla.service.ts:108 ~ BugzillaBugService ~ createBug ~ response:', response)
 
+      const attachmentResponse = await this.addAttachments({ bugId: response?.data?.id, data: data.attachments[0] })
+      console.log(
+        '🚀 ~ file: bugzilla.service.ts:130 ~ BugzillaBugService ~ createBug ~ attachmentResponse:',
+        attachmentResponse,
+      )
       //   } else {
       //     return res.status(201).json({ success: true, data: response?.data, alias: data.alias })
       //   }

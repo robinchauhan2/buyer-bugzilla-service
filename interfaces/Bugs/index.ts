@@ -10,6 +10,7 @@ export interface ICreateBug {
   rep_platform: string
   bpp_id: string
   bpp_name: string
+  attachments: string[]
 }
 
 export interface ICreateUser {
