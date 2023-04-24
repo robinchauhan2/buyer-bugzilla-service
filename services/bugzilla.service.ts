@@ -191,11 +191,19 @@ class BugzillaBugService {
   }
 
   async updateBug(req: Request, res: Response) {
+    function getStatus(status: string) {
+      switch (status) {
+        case 'RESOLVED':
+          return { status: req.body.status, resolution: 'FIXED' }
+        default:
+          return { status: req.body.status }
+      }
+    }
     try {
       const getInstance = new GetHttpRequest({
         url: `/rest/bug/${req.params.id}`,
         method: 'put',
-        data: { status: req.body.status },
+        data: getStatus(req.body.status),
         headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
       })
 
