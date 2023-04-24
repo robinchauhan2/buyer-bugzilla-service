@@ -62,44 +62,31 @@ class BugzillaBugService {
       if (serviceRes?.data?.products[0]?.id) {
         isProductExist = true
       }
+      //   let response : any = '';
 
       if (!isProductExist) {
         console.log('into isProductExist', !isProductExist)
 
-        productService
-          .registerProduct({
-            name: data.product.replace(/\s/g, '').toLowerCase(),
-            description: data.summary,
-            is_open: true,
-            has_unconfirmed: true,
-            version: 'Unspecified',
-            component: data.bpp_id,
-          })
-          .then(async (value: any) => {
-            console.log('🚀 ~ file: bugzilla.service.ts:78 ~ BugzillaBugService ~ .then ~ value:', value)
-            componentService
-              .createComponent({
-                default_assignee: data.bpp_id,
-                description: 'Contact details',
-                name: data.bpp_id,
-                product: data.product.replace(/\s/g, '').toLowerCase(),
-              })
-              .then((component) => {
-                console.log('🚀 ~ file: bugzilla.service.ts:86 ~ BugzillaBugService ~ .then ~ component:', component)
-              })
-          })
-      }
+        const product = await productService.registerProduct({
+          name: data.product.replace(/\s/g, '').toLowerCase(),
+          description: data.summary,
+          is_open: true,
+          has_unconfirmed: true,
+          version: 'Unspecified',
+        })
+        
+        console.log('🚀 ~ file: bugzilla.service.ts:77 ~ BugzillaBugService ~ createBug ~ product:', product)
 
-      componentService
-        .createComponent({
+        const component = await componentService.createComponent({
           default_assignee: data.bpp_id,
           description: 'Contact details',
-          name: data.bpp_id,
+          name: data.component,
           product: data.product.replace(/\s/g, '').toLowerCase(),
+          is_open: 1,
         })
-        .then((component) => {
-          console.log('🚀 ~ file: bugzilla.service.ts:86 ~ BugzillaBugService ~ .then ~ component:', component)
-        })
+
+        console.log('🚀 ~ file: bugzilla.service.ts:89 ~ BugzillaBugService ~ createBug ~ component:', component)
+      }
 
       const createBug = new GetHttpRequest({
         url: '/rest/bug',
@@ -107,10 +94,10 @@ class BugzillaBugService {
         headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
         data: {
           product: data.product.toLowerCase().replace(/\s/g, ''),
-          description: data.summary,
-          classification: 'Unclassified',
+          //   description: data.summary,
+          //   classification: 'Unclassified',
           summary: data.summary,
-          component: data.bpp_id,
+          component: data.component,
           version: 'unspecified',
           op_sys: data.op_sys,
           rep_platform: data.rep_platform,
@@ -118,9 +105,24 @@ class BugzillaBugService {
         },
       })
 
-      const response: any = await setTimeout(() => {
-        createBug.send()
-      }, 1000)
+      const response: any = await createBug.send()
+      console.log('🚀 ~ file: bugzilla.service.ts:108 ~ BugzillaBugService ~ createBug ~ response:', response)
+
+      //   } else {
+      //     return res.status(201).json({ success: true, data: response?.data, alias: data.alias })
+      //   }
+
+      //   componentService
+      //     .createComponent({
+      //       default_assignee: data.bpp_id,
+      //       description: 'Contact details',
+      //       name: data.bpp_id,
+      //       product: data.product.replace(/\s/g, '').toLowerCase(),
+      //       is_open: 1
+      //     })
+      //     .then((component) => {
+      //       console.log('🚀 ~ file: bugzilla.service.ts:86 ~ BugzillaBugService ~ .then ~ component:', component)
+      //     })
 
       return res.status(201).json({ success: true, data: response?.data, alias: data.alias })
     } catch (error: any) {

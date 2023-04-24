@@ -24,7 +24,6 @@ export interface IRegisterPRoduct {
   version: string
   is_open: true
   has_unconfirmed: true
-  component: string
 }
 
 export interface IComponents {
@@ -32,4 +31,5 @@ export interface IComponents {
   name: string
   description: string
   default_assignee: string
+  is_open: number
 }
