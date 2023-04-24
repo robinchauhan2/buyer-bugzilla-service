@@ -3,11 +3,8 @@ export type priority = 'Enhancement' | 'Normal' | 'Minor' | 'Major' | 'Blocker' 
 export interface ICreateBug {
   product: string
   component: string
-  version: string
   summary: string
   alias: string
-  op_sys: string
-  rep_platform: string
   bpp_id: string
   bpp_name: string
   attachments: string[]

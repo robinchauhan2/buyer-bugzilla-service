@@ -9,7 +9,6 @@ const port = process.env.PORT || 8000;
 const app = (0, app_1.default)();
 try {
     app.listen(port, () => {
-        console.log('process.env.API_KEY', process.env.API_KEY);
         logger_1.logger.info(`Connected successfully on port ${port}`);
     });
 }

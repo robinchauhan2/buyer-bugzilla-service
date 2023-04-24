@@ -42,11 +42,9 @@ class ProductService {
                     headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
                 });
                 const response = yield postInstance.send();
-                console.log('🚀 ~ file: product.service.ts:32 ~ ProductService ~ getProduct ~ response:', response);
                 return response;
             }
             catch (error) {
-                console.log('🚀 ~ file: product.service.ts:36 ~ ProductService ~ getProduct ~ error:', error);
                 logger_1.logger.error(error);
                 return error;
             }
