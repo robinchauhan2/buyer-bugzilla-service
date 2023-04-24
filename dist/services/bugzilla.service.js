@@ -47,7 +47,6 @@ class BugzillaBugService {
                     productId: `${(data.product + data.bpp_id).toLowerCase().trim()}`,
                 })
                     .then((value) => {
-                    console.log('getProduct', value);
                     if (value.data.id) {
                         isProductExist = true;
                     }
@@ -62,7 +61,7 @@ class BugzillaBugService {
                         version: 'Unspecified',
                     })
                         .then((value) => {
-                        console.log('vallue', value);
+                        logger('vallue', value);
                     });
                 }
                 const createBug = new HttpRequest_1.default({
@@ -82,7 +81,6 @@ class BugzillaBugService {
                 return res.status(201).json({ success: true, data: response === null || response === void 0 ? void 0 : response.data });
             }
             catch (error) {
-                console.log(error);
                 logger_1.logger.error(error);
                 return res.status(500).json({ error: true, message: error || 'Something went wrong' });
             }
@@ -119,7 +117,6 @@ class BugzillaBugService {
                 bpp_name: req.body.bpp_name,
             };
             try {
-                console.log('datadatadatadatadatadata', data, req.params.id);
                 const getInstance = new HttpRequest_1.default({
                     url: `/rest/bug/${req.params.id}`,
                     method: 'put',

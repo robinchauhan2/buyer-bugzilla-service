@@ -1,23 +1,18 @@
-import { ICreateBug } from "../interfaces/Bugs";
-import Joi from "joi";
+import { ICreateBug } from '../interfaces/Bugs'
+import Joi from 'joi'
 
 export function CreateBugSchemaValidator(bugObject: ICreateBug) {
+  const schema = Joi.object({
+    product: Joi.string().required(),
+    component: Joi.string().required(),
+    summary: Joi.string().required(),
+    alias: Joi.string().required().max(40),
+    bpp_id: Joi.string().required(),
+    bpp_name: Joi.string().required(),
+    attachments: Joi.array().items(Joi.string()),
+  })
 
+  const { error } = schema.validate(bugObject)
 
-    const schema = Joi.object({
-        product: Joi.string().required(),
-        component: Joi.string().required(),
-        version: Joi.string().required(),
-        summary: Joi.string().required(),
-        alias: Joi.string().required(),
-        op_sys: Joi.string().required(),
-        rep_platform: Joi.string().required()
-    })
-
-
-    const { error } = schema.validate(bugObject)
-
-
-
-    return error
+  return error
 }

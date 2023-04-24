@@ -45,7 +45,7 @@ class HttpRequest {
                     });
                 }
                 else {
-                    console.log(this.url);
+                
                     // Make server request using axios
                     result = yield (0, AxiosInstance_1.default)({
                         baseURL: process.env.BUGZILLA_BASE_URI,
@@ -55,21 +55,11 @@ class HttpRequest {
                         timeout: 180000,
                         data: JSON.stringify(this.data),
                     });
-                    console.log(result);
+                
                 }
                 return result;
             }
             catch (err) {
-                // if (err.response) {
-                //     // The client was given an error response (5xx, 4xx)
-                //     console.log('Error response', err, '\n', err.response);
-                // } else if (err.request) {
-                //     //` The client never received a response, and the request was never left
-                //     console.log('Error request', err, '\n', err.request);
-                // } else {
-                //     // Anything else
-                //     console.log('Error message', err, '\n', err.message);
-                // }
                 throw (_b = (_a = err === null || err === void 0 ? void 0 : err.response) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.message;
             }
         });
