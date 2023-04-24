@@ -160,6 +160,18 @@ class BugzillaBugService {
     }
   }
 
+  async getAttachment({ bugId }: { bugId: string }) {
+    const getAttachment = new GetHttpRequest({
+      url: `/rest/bug/${bugId}/attachment`,
+      method: 'get',
+      headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+    })
+
+    const getAttachmentResponse = await getAttachment.send()
+
+    return getAttachmentResponse?.data
+  }
+
   async getBug(req: Request, res: Response) {
     try {
       const getInstance = new GetHttpRequest({
@@ -169,8 +181,9 @@ class BugzillaBugService {
       })
 
       const response = await getInstance.send()
+      const getAttachmentsResponse = await this.getAttachment({ bugId: req.params.id })
 
-      return res.status(200).json({ success: true, data: response?.data })
+      return res.status(200).json({ success: true, bug: response?.data, attachments: getAttachmentsResponse })
     } catch (error: any) {
       logger.error(error)
       return res.status(500).json({ error: true, message: error?.message || 'Something went wrong' })
