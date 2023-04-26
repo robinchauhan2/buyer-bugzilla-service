@@ -21,7 +21,7 @@ class ProductService {
                 const postInstance = new HttpRequest_1.default({
                     url: '/rest/product',
                     method: 'post',
-                    headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+                    headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
                     data: registerData,
                 });
                 const response = yield postInstance.send();
@@ -39,7 +39,7 @@ class ProductService {
                 const postInstance = new HttpRequest_1.default({
                     url: `/rest/product/${productId}`,
                     method: 'get',
-                    headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+                    headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
                 });
                 const response = yield postInstance.send();
                 return response;

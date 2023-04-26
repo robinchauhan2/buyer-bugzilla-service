@@ -67,7 +67,7 @@ class BugzillaBugService {
                 const createBug = new HttpRequest_1.default({
                     url: '/rest/bug',
                     method: 'post',
-                    headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+                    headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
                     data: {
                         name: `${(data.product + data.bpp_id).toLowerCase().trim()}`,
                         description: data.summary,
@@ -92,7 +92,7 @@ class BugzillaBugService {
                 const getInstance = new HttpRequest_1.default({
                     url: `/rest/bug?id=${req.params.id}`,
                     method: 'get',
-                    headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+                    headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
                 });
                 const response = yield getInstance.send();
                 return res.status(200).json({ success: true, data: response === null || response === void 0 ? void 0 : response.data });
@@ -121,7 +121,7 @@ class BugzillaBugService {
                     url: `/rest/bug/${req.params.id}`,
                     method: 'put',
                     data: { status: req.body.status },
-                    headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+                    headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
                 });
                 const response = yield getInstance.send();
                 return res.status(200).json({ success: true, data: response === null || response === void 0 ? void 0 : response.data });

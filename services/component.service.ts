@@ -13,7 +13,7 @@ class ComponentService {
       const createComponentInstance = new HttpRequest({
         url: '/rest/component',
         method: 'post',
-        headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+        headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
         data: componentData,
       })
 

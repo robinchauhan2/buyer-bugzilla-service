@@ -21,7 +21,7 @@ class BugzillaBugService {
     const attachmentRequest = new GetHttpRequest({
       url: `/rest/bug/${bugId}/attachment`,
       method: 'post',
-      headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+      headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
       data: {
         ids: bugId,
         content_type: 'text/plain',
@@ -82,20 +82,19 @@ class BugzillaBugService {
           has_unconfirmed: true,
           version: 'Unspecified',
         })
-        const components = await componentService.createComponent({
+        await componentService.createComponent({
           default_assignee: data.bpp_id,
           description: 'Contact details',
           name: data.component,
           product: data.product.replace(/\s/g, '').toLowerCase(),
           is_open: 1,
         })
-
       }
 
       const createBug = new GetHttpRequest({
         url: '/rest/bug',
         method: 'post',
-        headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+        headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
         data: {
           product: data.product.toLowerCase().replace(/\s/g, ''),
           summary: data.summary,
@@ -127,7 +126,7 @@ class BugzillaBugService {
     const getAttachment = new GetHttpRequest({
       url: `/rest/bug/${bugId}/attachment`,
       method: 'get',
-      headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+      headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
     })
 
     const getAttachmentResponse = await getAttachment.send()
@@ -140,7 +139,7 @@ class BugzillaBugService {
       const getInstance = new GetHttpRequest({
         url: `/rest/bug?id=${req.params.id}`,
         method: 'get',
-        headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+        headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
       })
 
       const response = await getInstance.send()
@@ -169,11 +168,10 @@ class BugzillaBugService {
         url: `/rest/bug/${req.params.id}`,
         method: 'put',
         data: getStatus(req.body.status),
-        headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+        headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
       })
 
       const response = await getInstance.send()
-
 
       return res.status(200).json({ success: true, data: response?.data })
     } catch (error: any) {

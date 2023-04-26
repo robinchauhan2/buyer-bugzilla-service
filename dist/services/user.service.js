@@ -21,7 +21,7 @@ class UserService {
                 const postInstance = new HttpRequest_1.default({
                     url: '/rest/user',
                     method: 'post',
-                    headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+                    headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
                     data: data,
                 });
                 const response = yield postInstance.send();
@@ -39,7 +39,7 @@ class UserService {
                 const postInstance = new HttpRequest_1.default({
                     url: `/rest/user/${userId}`,
                     method: 'get',
-                    headers: { 'X-BUGZILLA-API-KEY': process.env.API_KEY },
+                    headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
                 });
                 const response = yield postInstance.send();
                 return response;
