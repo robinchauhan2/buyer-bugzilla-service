@@ -48,7 +48,6 @@ class HttpRequest {
           timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
         })
       } else {
-        console.log(this.url)
         // Make server request using axios
         result = await axiosInstance({
           baseURL: process.env.BUGZILLA_BASE_URI,
@@ -58,7 +57,6 @@ class HttpRequest {
           timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
           data: JSON.stringify(this.data),
         })
-        console.log(result)
       }
       return result
     } catch (err: any) {

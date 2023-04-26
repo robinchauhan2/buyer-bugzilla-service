@@ -56,15 +56,15 @@ class BugzillaBugService {
       if (error) return res.status(500).json({ error: true, message: error.message })
       logger.info('Hitting')
 
-      userService.getUser({ userId: data.bpp_id }).then(async (value) => {
-        if (!value?.data?.users[0]) {
-          await userService.createUser({
-            email: `${data.bpp_name.trim().toLowerCase().replace(/\s/g, '')}@example.com`,
-            full_name: data.bpp_name,
-            login: data.bpp_id,
-          })
-        }
-      })
+      const userResponse = await userService.getUser({ userId: data.bpp_id })
+
+      if (!userResponse?.data?.users[0]) {
+        await userService.createUser({
+          email: `${data.bpp_name.trim().toLowerCase().replace(/\s/g, '')}@example.com`,
+          full_name: data.bpp_name,
+          login: data.bpp_id,
+        })
+      }
 
       const serviceRes = await productService.getProduct({
         productId: `${data.product.toLowerCase().replace(/\s/g, '')}`,
@@ -82,14 +82,14 @@ class BugzillaBugService {
           has_unconfirmed: true,
           version: 'Unspecified',
         })
-
-        await componentService.createComponent({
+        const components = await componentService.createComponent({
           default_assignee: data.bpp_id,
           description: 'Contact details',
           name: data.component,
           product: data.product.replace(/\s/g, '').toLowerCase(),
           is_open: 1,
         })
+
       }
 
       const createBug = new GetHttpRequest({
@@ -109,10 +109,12 @@ class BugzillaBugService {
 
       const response: any = await createBug.send()
 
-      await this.addAttachments({
-        bugId: response?.data?.id,
-        data: data?.attachments[0],
-      })
+      if (data?.attachments && data?.attachments?.length !== 0) {
+        await this.addAttachments({
+          bugId: response?.data?.id,
+          data: data?.attachments[0],
+        })
+      }
 
       return res.status(201).json({ success: true, data: response?.data, alias: data.alias })
     } catch (error: any) {
@@ -152,6 +154,7 @@ class BugzillaBugService {
   }
 
   async updateBug(req: Request, res: Response) {
+    console.log('req.params.id', req.params.id)
     function getStatus(status: string) {
       switch (status) {
         case 'RESOLVED':
@@ -160,6 +163,7 @@ class BugzillaBugService {
           return { status: req.body.status }
       }
     }
+
     try {
       const getInstance = new GetHttpRequest({
         url: `/rest/bug/${req.params.id}`,
@@ -169,6 +173,7 @@ class BugzillaBugService {
       })
 
       const response = await getInstance.send()
+
 
       return res.status(200).json({ success: true, data: response?.data })
     } catch (error: any) {
