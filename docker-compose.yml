@@ -1,13 +1,13 @@
 version: "3"
 services:
-  backend:
+  bugzilla-node-backend:
     container_name: bugzilla-service-dev
     build: .
     ports:
       - "8000:8001"
     restart: always
   
-  bugzilla-dev-sqlite:
+  bugzilla-dev-service:
     build:
       context: bugzilla-main
       dockerfile: Dockerfile
