@@ -60,6 +60,7 @@ class HttpRequest {
       }
       return result
     } catch (err: any) {
+      console.log(err)
       if (err.response) {
         // The client was given an error response (5xx, 4xx)
         console.log('Error response', err, '\n', err.response)

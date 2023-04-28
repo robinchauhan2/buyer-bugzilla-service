@@ -153,7 +153,6 @@ class BugzillaBugService {
   }
 
   async updateBug(req: Request, res: Response) {
-    console.log('req.params.id', req.params.id)
     function getStatus(status: string) {
       switch (status) {
         case 'RESOLVED':
