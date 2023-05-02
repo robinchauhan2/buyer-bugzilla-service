@@ -38,7 +38,7 @@ RUN chmod 755 /usr/local/bin/*
 
 COPY conf/checksetup_answers.txt $BUGZILLA_WWW/checksetup_answers.txt
 ENV BUGZILLA_ADMIN_EMAIL=$BUGZILLA_ADMIN_EMAIL
-RUN replace_email.sh
+RUN replace_config.sh
 RUN bugzilla_config.sh
 RUN su - $BUGZILLA_USER -c dev_config.sh
 

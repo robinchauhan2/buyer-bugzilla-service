@@ -1,4 +1,4 @@
-$answer{'ADMIN_EMAIL'} = 'devops@thewitslab.com';
+$answer{'ADMIN_EMAIL'} = '__admin_email__';
 $answer{'ADMIN_LOGIN'} = 'admin';
 $answer{'ADMIN_OK'} = 'Y';
 $answer{'ADMIN_PASSWORD'} = 'password';
@@ -24,6 +24,6 @@ $answer{'diffpath'} = '/usr/bin';
 $answer{'index_html'} = 0;
 $answer{'interdiffbin'} = '/usr/bin/interdiff';
 $answer{'memcached_servers'} = "localhost:11211";
-$answer{'urlbase'} = 'http://localhost:90/bugzilla/';
+$answer{'urlbase'} = '__base_url__';
 $answer{'use_suexec'} = '';
 $answer{'webservergroup'} = 'bugzilla';
