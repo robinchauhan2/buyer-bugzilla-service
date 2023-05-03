@@ -36,8 +36,15 @@ FROM bugzilla/bugzilla-dev
 COPY scripts/* /usr/local/bin/
 RUN chmod 755 /usr/local/bin/*
 
-COPY conf/checksetup_answers.txt $BUGZILLA_WWW/checksetup_answers.txt
 ENV BUGZILLA_ADMIN_EMAIL=$BUGZILLA_ADMIN_EMAIL
+ENV BUGZILLA_EXTERNAL_URI=$BUGZILLA_EXTERNAL_URI
+
+COPY conf/checksetup_answers.txt $BUGZILLA_WWW/checksetup_answers.txt
+
+RUN cat $BUGZILLA_WWW/checksetup_answers.txt
+
+RUN bash -c 'echo -e $BUGZILLA_WWW/checksetup_answers.txt'
+
 RUN replace_config.sh
 RUN bugzilla_config.sh
 RUN su - $BUGZILLA_USER -c dev_config.sh
