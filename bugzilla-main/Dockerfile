@@ -46,7 +46,7 @@ RUN cat $BUGZILLA_WWW/checksetup_answers.txt
 RUN bash -c 'echo -e $BUGZILLA_WWW/checksetup_answers.txt'
 
 RUN replace_config.sh
-RUN bugzilla_config.sh
+
 RUN su - $BUGZILLA_USER -c dev_config.sh
 
 RUN chown -R $BUGZILLA_USER.$BUGZILLA_USER $BUGZILLA_WWW /home/$BUGZILLA_USER
