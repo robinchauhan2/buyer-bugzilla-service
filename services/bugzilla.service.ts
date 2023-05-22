@@ -42,7 +42,6 @@ class BugzillaBugService {
 
     const data: ICreateBug = {
       product: req.body.product,
-      component: req.body.component,
       summary: req.body.summary,
       alias: req.body.alias,
       bpp_id: req.body.bpp_id,
@@ -59,7 +58,7 @@ class BugzillaBugService {
 
       const userResponse = await userService.getUser({ userId: data.bpp_id })
 
-      if (!userResponse?.data?.users[0]) {
+      if (!userResponse?.data?.users?.[0]) {
         await userService.createUser({
           email: `${data.bpp_name.trim().toLowerCase().replace(/\s/g, '')}@example.com`,
           full_name: data.bpp_name,
@@ -83,10 +82,11 @@ class BugzillaBugService {
           has_unconfirmed: true,
           version: 'Unspecified',
         })
+
         await componentService.createComponent({
           default_assignee: data.bpp_id,
           description: 'Contact details',
-          name: data.component,
+          name: 'Component',
           product: data.product.replace(/\s/g, '').toLowerCase(),
           is_open: 1,
         })
@@ -103,7 +103,7 @@ class BugzillaBugService {
         data: {
           product: data.product.toLowerCase().replace(/\s/g, ''),
           summary: data.summary,
-          component: data.component,
+          component: 'Component',
           version: 'unspecified',
           op_sys: 'ALL',
           rep_platform: 'ALL',
