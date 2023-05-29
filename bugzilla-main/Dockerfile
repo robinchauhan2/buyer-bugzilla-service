@@ -13,4 +13,4 @@ COPY conf/checksetup_answers.txt $BUGZILLA_WWW/checksetup_answers.txt
 RUN bugzilla_config.sh
 RUN su - $BUGZILLA_USER -c dev_config.sh
 RUN chown -R $BUGZILLA_USER.$BUGZILLA_USER $BUGZILLA_WWW /home/$BUGZILLA_USER
-CMD [“/usr/bin/supervisord”, “-c”, “/etc/supervisord.conf”]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
