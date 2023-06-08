@@ -1,4 +1,4 @@
-$answer{'ADMIN_EMAIL'} = 'robink.chauhan@ondc.org';
+$answer{'ADMIN_EMAIL'} = 'example@example.com';
 $answer{'ADMIN_LOGIN'} = 'admin';
 $answer{'ADMIN_OK'} = 'Y';
 $answer{'ADMIN_PASSWORD'} = 'password';
