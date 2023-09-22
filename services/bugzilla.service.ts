@@ -1,11 +1,12 @@
 import { Request, Response } from 'express'
-import { ICreateBug } from '../interfaces/Bugs'
-import { CreateBugSchemaValidator } from '../utils/validator'
+import { ICreateBug, ICreateTicket } from '../interfaces/Bugs'
+import { CreateBugSchemaValidator,CreateTicketSchemaValidator } from '../utils/validator'
 import { logger } from '../shared/logger'
 import GetHttpRequest from '../utils/HttpRequest'
 import ProductService from './product.service'
 import UserService from './user.service'
 import ComponentService from './component.service'
+import axios from 'axios'
 
 const productService = new ProductService()
 const userService = new UserService()
@@ -129,6 +130,40 @@ class BugzillaBugService {
       }
 
       return res.status(201).json({ success: true, data: response?.data, alias: data.alias })
+    } catch (error: any) {
+      logger.error(error)
+      return res.status(500).json({ error: true, message: error || 'Something went wrong' })
+    }
+  }
+
+
+  async createTicket(_req: Request, res: Response) {
+      const data: ICreateTicket = {
+      "subject": "New Issue",
+      "issue": "Issue Exmaple 43563",
+      "owner": "6501b2f480b3a2e74ceb984d",
+      "group": "6501b2f380b3a2e74ceb9842",
+      "type": "65017a62600eff13531e1eb0" ,
+      "priority": "65017a7942764e2bd88b1e73"
+    }
+
+    try {
+      const error = CreateTicketSchemaValidator(data)
+
+      if (error) return res.status(500).json({ error: true, message: error.message })
+      logger.info('Hitting')
+
+      const createBug = await axios({
+        url: 'http://trudesk-dev-service:8118/api/v1/tickets/create',
+        method: 'post',
+        headers: {
+          "accesstoken": "309bf3a6445b19670ac6b792cdb372eafd340148"
+        },
+        data: data
+      })
+      console.log('createBug!!!!!!!============>', createBug)
+
+      return res.status(201).json({ success: true, data: createBug  })
     } catch (error: any) {
       logger.error(error)
       return res.status(500).json({ error: true, message: error || 'Something went wrong' })

@@ -10,6 +10,16 @@ export interface ICreateBug {
   action: any
 }
 
+
+export interface ICreateTicket {
+  issue: string
+  subject: string
+  owner: string
+  group: string
+  type: string
+  priority: string
+}
+
 export interface ICreateUser {
   email: string
   full_name: string

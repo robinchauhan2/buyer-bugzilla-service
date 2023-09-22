@@ -8,7 +8,4 @@ router.post("/create", bugController.createBug);
 router.get("/getBug/:id", bugController.getAllBug);
 router.put("/updateBug/:id", bugController.updateBug);
 
-
-
-
 export default router;

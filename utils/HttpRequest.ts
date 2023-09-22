@@ -40,23 +40,55 @@ class HttpRequest {
       let result
 
       if (this.method.toLowerCase() == 'get') {
-        result = await axiosInstance({
-          baseURL: process.env.BUGZILLA_BASE_URI,
-          url: this.url,
-          method: this.method,
-          headers: headers,
-          timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
-        })
+        if(process.env.SELECTED_ISSUE_CRM=="trudesk"){
+          result = await axiosInstance({
+            baseURL: process.env.TRUDESK_BASE_URI,
+            url: this.url,
+            method: 'get',
+            headers: headers,
+            timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
+          })
+
+        }else{
+          result = await axiosInstance({
+            baseURL: process.env.BUGZILLA_BASE_URI,
+            url: this.url,
+            method: 'get',
+            headers: headers,
+            timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
+          })
+        }
+      
       } else {
         // Make server request using axios
-        result = await axiosInstance({
-          baseURL: process.env.BUGZILLA_BASE_URI,
-          url: this.url,
-          method: this.method,
-          // headers: headers,
-          timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
-          data: JSON.stringify(this.data),
-        })
+        if(process.env.SELECTED_ISSUE_CRM=="trudesk"){
+            result = await axiosInstance({
+            baseURL: process.env.TRUDESK_BASE_URI,
+            url: this.url,
+            method: 'post',
+            headers: headers,
+            timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
+            data: JSON.stringify(this.data),
+          })
+        } else {
+          console.log('bugzilla', {
+            baseURL: process.env.BUGZILLA_BASE_URI,
+            url: this.url,
+            method: this.method,
+            // headers: headers,
+            timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
+            data: JSON.stringify(this.data),
+          })
+          result = await axiosInstance({
+            baseURL: process.env.BUGZILLA_BASE_URI,
+            url: this.url,
+            method: 'post',
+            // headers: headers,
+            timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
+            data: JSON.stringify(this.data),
+          })
+        }
+       
       }
       return result
     } catch (err: any) {
