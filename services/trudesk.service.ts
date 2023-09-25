@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import axios from 'axios';
 import { logger } from '../shared/logger'
 import GetHttpRequest from '../utils/HttpRequest'
 
@@ -10,22 +9,20 @@ class TrudeskService {
     this.updateBug = this.updateBug.bind(this)
   }
 
-  async addAttachments({ ticketId, data }: { ticketId: string; data: string }) {
-    
-    const fileData:any = await axios({
-      url: data,
-      method:'get'
-    })
+  async addAttachments({ ticketId, data, ownerId }: { ticketId: string; data: string, ownerId: string }) {
+
     const attachmentRequest = new GetHttpRequest({
-      url: `/tickets/uploadattachment`,
+      url: `/tickets/attachment`,
       method: 'post',
-      headers: {'CSRF-TOKEN': 'UbM2T5wy-4A1KH4zpFXqUqeXkJWSe6uPOSvo'},
       data: {
-        ticketId:ticketId,
-        attachment: fileData.data
+        ticketId,
+        ownerId,
+        attachment: data
     }})
+    console.log('attachmentRequest', attachmentRequest)
 
     const attachmentResponse = await attachmentRequest.send()
+    console.log('first================', attachmentResponse)
     return attachmentResponse
   }
 
@@ -80,13 +77,14 @@ class TrudeskService {
             }
         })
       const response = await createTicket.send()
-      // console.log('req.body.attachments[0]', req.body.attachments[0])  
-      // if (req.body.attachments && req.body.attachments?.length !== 0) {
-      //   await this.addAttachments({
-      //     ticketId: response?.data?._id,
-      //     data: req.body.attachments[0],
-      //   })
-      // }
+      if (req.body.attachments && req.body.attachments?.length !== 0) {
+        console.log('req.body.attachments[0]', req.body.attachments[0])  
+        await this.addAttachments({
+          ownerId: owner?.data?.user._id,
+          ticketId: response?.data?.ticket?._id,
+          data: req.body.attachments[0],
+        })
+      }
 
       const complaint_actions_merged = [...req.body.action.complainant_actions]
 
