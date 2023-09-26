@@ -64,7 +64,7 @@ class TrudeskService {
           url: '/api/v1/tickets/create',
           method: 'post',
           data: {
-              subject: req.body.product,
+              subject: `${req.body.product} || ${req.body.issue_desc}`,
               issue: req.body.summary,
               owner: owner?.data?.user._id,
               group: group?.data?.groups[0]._id,
