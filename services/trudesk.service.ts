@@ -153,8 +153,14 @@ class TrudeskService {
   }
 
   async updateBug(req: Request, res: Response) {
-    const complaint_actions_merged = [...req.body.action.respondent_actions]
-
+    let complaint_actions_merged
+   if(req.body.action.respondent_actions){
+    complaint_actions_merged = [...req.body.action.respondent_actions]
+   }else{
+    complaint_actions_merged = [...req.body.action.complainant_actions]
+   }
+     
+    console.log('complaint_actions_merged', JSON.stringify(complaint_actions_merged))
     try {
       // To fetch owner Id
         const ownerApi = new GetHttpRequest({
@@ -175,10 +181,24 @@ class TrudeskService {
       })
 
       const ticketDetails = await getInstance.send()
+      const commentsArr = ticketDetails.data.ticket.comments.map( (elem: any) => elem.comment ).filter((elem:any) => elem.includes('Action Taken'))
+      const lastComment = commentsArr[commentsArr.length-1].replace('<p>', '').replace('</p>', '').split('<br>')
+      const updateAt = lastComment[lastComment.length-1].split(":").slice(1).join(":").trim()
+      console.log('updateAt================', updateAt)
 
-      const comment = `Respondent-Action: ${complaint_actions_merged[0].respondent_action}\nRespondent-Action-Description:  ${complaint_actions_merged[0].short_desc}\nAction Taken By: Respondent\nRespondent-Name: ${complaint_actions_merged[0].updated_by.person.name}\nAction Taken At:  ${complaint_actions_merged[0].updated_at}`
-
-      const response = await this.addComments({ _id: ticketDetails.data.ticket._id, data: comment, accesstoken: owner?.data?.accessToken  })
+      const latestIssueAction = complaint_actions_merged.reduce((last, current) => {
+      if (current.updated_at > last.updated_at) {
+        return current
+      }
+      return last
+    })
+    console.log('latestIssueAction', latestIssueAction.updated_at)
+    const comment = this.generateTheCommentFromObject(latestIssueAction)
+    let response
+      // const comment = `Respondent-Action: ${latestIssueAction.respondent_action}\nRespondent-Action-Description:  ${latestIssueAction.short_desc}\nAction Taken By: Respondent\nRespondent-Name: ${latestIssueAction.updated_by.person.name}\nAction Taken At:  ${latestIssueAction.updated_at}`
+    if(updateAt !== latestIssueAction.updated_at){
+       response = await this.addComments({ _id: ticketDetails.data.ticket._id, data: comment, accesstoken: owner?.data?.accessToken  })
+    }
       // const getInstance = new GetHttpRequest({
       //   url: `/rest/bug/${req.params.id}`,
       //   method: 'put',
@@ -214,6 +234,29 @@ class TrudeskService {
         }
     }
   }
+
+  generateTheCommentFromObject(item: any) {
+    const keys = Object.keys(item)
+    if(keys.includes('complainant_action')){
+      return `\nAction Taken: ${item.complainant_action}\nAction Comment:  ${item.short_desc}\nAction Taken By: Complainant\nAction Taken At:  ${item.updated_at}`
+    }
+    else if(keys.includes('respondent_action'))
+    {
+      return `Action Taken: ${item.respondent_action}\nAction Comment:  ${item.short_desc}\nAction Taken By: Respondent\nAction Taken At:  ${item.updated_at}`
+    }
+    else {
+      return '';
+    }
+    // switch (keys[0]) {
+    //   case 'complainant_action':
+    //     return `\nAction Taken: ${item.complainant_action}\nAction Comment:  ${item.short_desc}\nAction Taken By: Complainant\nAction Taken At:  ${item.updated_at}`
+    //   case 'respondent_action':
+    //     return `Action Taken: ${item.respondent_action}\nAction Comment:  ${item.short_desc}\nAction Taken By: Respondent\nAction Taken At:  ${item.updated_at}`
+    //   default:
+    //     return ''
+    // }
+  }
+
 }
 
 export default TrudeskService

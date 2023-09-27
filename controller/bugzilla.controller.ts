@@ -36,6 +36,7 @@ class BugsController {
   }
 
   async updateBug(req: Request, res: Response) {
+    console.log('req.body', req.body)
     let data
     if (process.env.SELECTED_ISSUE_CRM=='trudesk') {
       data = await Trudesk.updateBug(req, res)
