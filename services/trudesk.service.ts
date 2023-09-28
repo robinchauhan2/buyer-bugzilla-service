@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { logger } from '../shared/logger'
 import GetHttpRequest from '../utils/HttpRequest'
+import axios from 'axios'
 
 
 class TrudeskService {
@@ -181,7 +182,8 @@ class TrudeskService {
       })
 
       const ticketDetails = await getInstance.send()
-      const commentsArr = ticketDetails.data.ticket.comments.map( (elem: any) => elem.comment ).filter((elem:any) => elem.includes('Action Taken'))
+      const commentsArr = ticketDetails.data.ticket.comments.map( (elem: any) => elem.comment ).filter((elem:any) => elem.includes('Action Taken At'))
+      console.log('commentArr------', commentsArr)
       const lastComment = commentsArr[commentsArr.length-1].replace('<p>', '').replace('</p>', '').split('<br>')
       const updateAt = lastComment[lastComment.length-1].split(":").slice(1).join(":").trim()
       console.log('updateAt================', updateAt)
@@ -195,18 +197,58 @@ class TrudeskService {
     console.log('latestIssueAction', latestIssueAction.updated_at)
     const comment = this.generateTheCommentFromObject(latestIssueAction)
     let response
-      // const comment = `Respondent-Action: ${latestIssueAction.respondent_action}\nRespondent-Action-Description:  ${latestIssueAction.short_desc}\nAction Taken By: Respondent\nRespondent-Name: ${latestIssueAction.updated_by.person.name}\nAction Taken At:  ${latestIssueAction.updated_at}`
     if(updateAt !== latestIssueAction.updated_at){
        response = await this.addComments({ _id: ticketDetails.data.ticket._id, data: comment, accesstoken: owner?.data?.accessToken  })
     }
-      // const getInstance = new GetHttpRequest({
-      //   url: `/rest/bug/${req.params.id}`,
-      //   method: 'put',
-      //   data: this.getStatus(req.body.status, latestCommit),
-      //   headers: { 'X-BUGZILLA-API-KEY': process.env.BUGZILLA_API_KEY },
-      // })
+    const ticketId = ticketDetails.data.ticket._id
 
-      // const response = await getInstance.send()
+    
+
+    if(latestIssueAction?.complainant_action === "ESCALATE"){
+       // To fetch types
+       const fetchType = new GetHttpRequest({
+        url: '/api/v1/tickets/types',
+        method: 'get',
+        headers: {
+          "accesstoken": owner?.data?.accessToken
+        }
+      })
+      const type = await fetchType.send()
+      console.log('type?.data============', type?.data)
+      const grievanceTypeid = type?.data.filter((ele:any)=> ele.name === "Task")
+      console.log('grievanceTypeid', grievanceTypeid[0]?._id)
+      const grievedata = await axios({
+        baseURL:`http://trudesk-dev-service:8118/api/v1/tickets/tickettype/${ticketId}`,
+        method: 'put',
+        data: {"type": grievanceTypeid[0]?._id},
+        headers: { 'accesstoken': owner?.data?.accessToken },
+      })
+     // const grievedata = await getInstance.send();  
+      console.log('grievedata', grievedata.data)
+    }
+
+    if(latestIssueAction.complainant_action === "CLOSE"){
+      // To fetch statuses
+      const fetchStatus = new GetHttpRequest({
+        url: '/api/v1/tickets/status',
+        method: 'get',
+        headers: {
+          "accesstoken": owner?.data?.accessToken
+        }
+      })
+      const status = await fetchStatus.send()
+      console.log('first', status)
+      const closedStatusid = status?.data?.status.filter((ele:any) => ele.name === "Closed")
+
+      console.log('closedStatusid===========', closedStatusid[0]?._id)
+      const closed = await axios({
+      baseURL:`http://trudesk-dev-service:8118/api/v1/tickets/${ticketId}`,
+      method: 'put',
+      data: {"status": closedStatusid[0]?._id},
+      headers: { 'accesstoken': owner?.data?.accessToken },
+    })
+    console.log('closed', closed)
+  }
 
       return res.status(200).json({ success: true, data: response?.data })
     } catch (error: any) {
@@ -238,23 +280,15 @@ class TrudeskService {
   generateTheCommentFromObject(item: any) {
     const keys = Object.keys(item)
     if(keys.includes('complainant_action')){
-      return `\nAction Taken: ${item.complainant_action}\nAction Comment:  ${item.short_desc}\nAction Taken By: Complainant\nAction Taken At:  ${item.updated_at}`
+      return `\nComplainant-Action: ${item.complainant_action}\nComplainant-Action-Description:  ${item.short_desc}\nAction Taken By: Complainant\nComplainant-Name: ${item.updated_by.person.name}\nAction Taken At:  ${item.updated_at}`
     }
     else if(keys.includes('respondent_action'))
     {
-      return `Action Taken: ${item.respondent_action}\nAction Comment:  ${item.short_desc}\nAction Taken By: Respondent\nAction Taken At:  ${item.updated_at}`
+      return `\nRespondent-Action: ${item.respondent_action}\nRespondent-Action-Description:  ${item.short_desc}\nAction Taken By: Respondent\nRespondent-Name: ${item.updated_by.person.name}\nAction Taken At:  ${item.updated_at}`
     }
     else {
       return '';
     }
-    // switch (keys[0]) {
-    //   case 'complainant_action':
-    //     return `\nAction Taken: ${item.complainant_action}\nAction Comment:  ${item.short_desc}\nAction Taken By: Complainant\nAction Taken At:  ${item.updated_at}`
-    //   case 'respondent_action':
-    //     return `Action Taken: ${item.respondent_action}\nAction Comment:  ${item.short_desc}\nAction Taken By: Respondent\nAction Taken At:  ${item.updated_at}`
-    //   default:
-    //     return ''
-    // }
   }
 
 }
