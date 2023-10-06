@@ -1,51 +1,42 @@
-import { Response, Request } from 'express'
-import { logger } from '../shared/logger'
-import BugzillaBugService from '../services/bugzilla.service'
-import TrudeskService from '../services/trudesk.service'
+import {  NextFunction } from 'express'
+import MainService from '../services/main.service'
 
-
-const BugService = new BugzillaBugService()
-const Trudesk = new TrudeskService()
-
+const mainservice = new MainService();
 
 class BugsController {
-  async createBug(req: Request, res: Response) {
-    console.log('process.env.', process.env.SELECTED_ISSUE_CRM)
-    let data
-    if (process.env.SELECTED_ISSUE_CRM=='trudesk') {
-      data = await Trudesk.createBug(req, res)
-      logger.info('POST Trudesk Endpoint hit with: ' + req.body)
-    }else{
-      data = await BugService.createBug(req, res)
-      logger.info('POST Bugzilla Endpoint hit with: ' + req.body)
-    }
+  async createBug(req: any, res: any,next: NextFunction) {
+    console.log('res', res)
+    mainservice
+    .createIssue(req , res)
+    .then((response:any) => {
+      res.json(response);
+    })
+    .catch((err:any) => {
+      next(err);
+    });
     
-    return data
   }
 
-  async getAllBug(req: Request, res: Response) {
-    let data
-    if (process.env.SELECTED_ISSUE_CRM=='trudesk') {
-      data = await Trudesk.getBug(req, res)
-      logger.info('POST Trudesk Endpoint hit with: ' + req.body)
-    }else{
-      data = await BugService.getBug(req, res)
-    logger.info('POST Bugzilla Endpoint hit with: ' + req.body)
-    }
-    return data
+  async getAllBug(req: any, res: any,next:NextFunction) {
+    mainservice
+    .getIssue(req , res)
+    .then((response:any) => {
+      res.json(response);
+    })
+    .catch((err:any) => {
+      next(err);
+    });
   }
 
-  async updateBug(req: Request, res: Response) {
-    console.log('req.body', req.body)
-    let data
-    if (process.env.SELECTED_ISSUE_CRM=='trudesk') {
-      data = await Trudesk.updateBug(req, res)
-      logger.info('POST Trudesk Endpoint hit with: ' + req.body)
-    }else{
-      data = await BugService.updateBug(req, res)
-      logger.info('Put Bugzilla Endpoint hit with: ' + JSON.stringify(req.body))
-    }
-    return data
+  async updateBug(req: any, res: any, next:NextFunction) {
+    mainservice
+    .updateIssue(req , res)
+    .then((response:any) => {
+      res.json(response);
+    })
+    .catch((err:any) => {
+      next(err);
+    });
   }
 
 }

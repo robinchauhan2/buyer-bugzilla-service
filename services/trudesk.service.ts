@@ -29,7 +29,10 @@ class TrudeskService {
 
   async createBug(req: Request, res: Response) {
     console.log('req.body======================', JSON.stringify(req.body))
+    
     try {
+     
+
       // To fetch owner Id
       const ownerApi = new GetHttpRequest({
         url: '/api/v1/login',
@@ -40,6 +43,22 @@ class TrudeskService {
         },
       })
       const owner = await ownerApi.send()
+
+      // To save the issue 
+      const { issues } = req.body
+      console.log('issues==>', issues)
+      const saveIssue = new GetHttpRequest({
+          url: '/api/v1/issue/save',
+          method: 'post',
+          data: {
+            ...issues
+          },
+          headers: {
+            "accesstoken": owner?.data?.accessToken
+          }
+      })
+      const saveIssues = await saveIssue.send()
+      console.log('saveIssues', saveIssues)
 
       // To fetch group Id
       const fetchGroup = new GetHttpRequest({
@@ -79,12 +98,17 @@ class TrudeskService {
         })
       const response = await createTicket.send()
       if (req.body.attachments && req.body.attachments?.length !== 0) {
-        console.log('req.body.attachments[0]', req.body.attachments[0])  
-        await this.addAttachments({
-          ownerId: owner?.data?.user._id,
-          ticketId: response?.data?.ticket?._id,
-          data: req.body.attachments[0],
+        console.log('req.body.attachments[0]', req.body.attachments)  
+        req.body.attachments.map(async (element:any,index:number)=>{
+          console.log('element', element)
+          console.log('index', index)
+          await this.addAttachments({
+            ownerId: owner?.data?.user._id,
+            ticketId: response?.data?.ticket?._id,
+            data: req.body.attachments[index],
+          })
         })
+        
       }
 
       const complaint_actions_merged = [...req.body.action.complainant_actions]
@@ -154,6 +178,7 @@ class TrudeskService {
   }
 
   async updateBug(req: Request, res: Response) {
+    console.log('updateBug')
     let complaint_actions_merged
    if(req.body.action.respondent_actions){
     complaint_actions_merged = [...req.body.action.respondent_actions]
@@ -215,7 +240,7 @@ class TrudeskService {
       })
       const type = await fetchType.send()
       console.log('type?.data============', type?.data)
-      const grievanceTypeid = type?.data.filter((ele:any)=> ele.name === "Task")
+      const grievanceTypeid = type?.data.filter((ele:any)=> ele.name === "Grievance")
       console.log('grievanceTypeid', grievanceTypeid[0]?._id)
       const grievedata = await axios({
         baseURL:`http://trudesk-dev-service:8118/api/v1/tickets/tickettype/${ticketId}`,

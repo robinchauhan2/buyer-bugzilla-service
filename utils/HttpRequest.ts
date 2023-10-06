@@ -1,4 +1,5 @@
 import axiosInstance from './AxiosInstance'
+import { TRUDESK } from './constant'
 
 /**
  * Used to communicate with server
@@ -40,7 +41,7 @@ class HttpRequest {
       let result
 
       if (this.method.toLowerCase() == 'get') {
-        if(process.env.SELECTED_ISSUE_CRM=="trudesk"){
+        if(process.env.SELECTED_ISSUE_CRM===TRUDESK){
           result = await axiosInstance({
             baseURL: process.env.TRUDESK_BASE_URI,
             url: this.url,
@@ -48,7 +49,6 @@ class HttpRequest {
             headers: headers,
             timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
           })
-
         }else{
           result = await axiosInstance({
             baseURL: process.env.BUGZILLA_BASE_URI,
@@ -61,7 +61,7 @@ class HttpRequest {
       
       } else {
         // Make server request using axios
-        if(process.env.SELECTED_ISSUE_CRM=="trudesk"){
+        if(process.env.SELECTED_ISSUE_CRM===TRUDESK){
             result = await axiosInstance({
             baseURL: process.env.TRUDESK_BASE_URI,
             url: this.url,
@@ -71,14 +71,6 @@ class HttpRequest {
             data: JSON.stringify(this.data),
           })
         } else {
-          console.log('bugzilla', {
-            baseURL: process.env.BUGZILLA_BASE_URI,
-            url: this.url,
-            method: this.method,
-            // headers: headers,
-            timeout: 180000, // If the request takes longer than `timeout`, the request will be aborted.
-            data: JSON.stringify(this.data),
-          })
           result = await axiosInstance({
             baseURL: process.env.BUGZILLA_BASE_URI,
             url: this.url,
